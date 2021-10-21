@@ -66,9 +66,6 @@ class Trainer():
         self.train_score = self.metric_fn(y_pred=pred_lst, y_answer=target_lst, y_prob=prob_lst)
         msg = f'Epoch {epoch_index}, Train loss: {self.train_mean_loss}, Acc: {self.train_score}'
         print(msg)
-        
-        # WandB : train loss, train score 추적
-        wandb.log({"train_loss": self.train_mean_loss, "train_score": self.train_score})
 
         #self.logger.info(msg) if self.logger else print(msg)
 
@@ -103,9 +100,6 @@ class Trainer():
             self.validation_score = self.metric_fn(y_pred=pred_lst, y_answer=target_lst, y_prob=prob_lst)
             msg = f'Epoch {epoch_index}, {mode} loss: {self.val_mean_loss}, Acc: {self.validation_score}'
             print(msg)
-            
-            # WandB : validation loss, validation score 추적
-            wandb.log({"validation_loss": self.val_mean_loss, "validation_score": self.validation_score})
             
             # WandB : 이미지 출력
             wandb.log({"val images": val_images_lst})
