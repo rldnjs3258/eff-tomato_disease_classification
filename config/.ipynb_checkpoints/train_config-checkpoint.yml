@@ -24,9 +24,9 @@ TRAIN:
   loss_function:
   metric_function:
   input_shape: 128 # Efficientnet의 중요 파라미터
-  layer: 'None'
-  img_aug: 'None'
-  softmax: 'Y'
+  layer: '1000-512-256-10'
+  img_aug: 'Y'
+  softmax: 'N'
   initialization : 'Xavier'
 
 PERFORMANCE_RECORD:
