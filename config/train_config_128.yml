@@ -1,0 +1,51 @@
+# 내용: Train시 config 파일
+# UPDATED: num_epochs, batch_size(cuda out of memory시 줄이기), early_stopping_patience, model, input_shape, layer, img_aug, softmax, initialization
+# TODO: 하이퍼 파라미터 튜닝 및 실험 진행 (early_stopping_patience, model, input_shape, layer, img_aug, softmax, initialization)
+
+SEED:
+  random_seed: 42 # reproduction을 위한 seed 고정
+
+DATALOADER:
+  num_workers: 2 # 데이터 프로세싱 코어 할당
+  shuffle: # 데이터를 인덱스와 관계 없이 로드 (과적합 방지)
+  pin_memory:
+  drop_last: # 배치 단위로 데이터를 불러 올 때 마지막 batch의 길이가 다를 수 있다. 이 경우 drop!
+
+TRAIN:
+  num_epochs: 50
+  batch_size: 128 # 128 -> 256
+  learning_rate: 0.0005
+  early_stopping_patience: 20 # early stop 쓸지 고려 (진동 https://medium.com/@codecompose/resnet-e3097d2cfe42)
+  model: Efficientb6
+  optimizer:
+  scheduler:
+  momentum:
+  weight_decay: 0.00001
+  loss_function:
+  metric_function:
+  input_shape: 128 # Efficientnet의 중요 파라미터
+  layer: '1000-512-256-10'
+  img_aug: 'True'
+  softmax: 'N'
+  initialization : 'Xavier'
+
+PERFORMANCE_RECORD:
+  column_list:
+    - train_serial
+    - train_timestamp
+    - model_str
+    - optimizer_str
+    - loss_function_str
+    - metric_function_str
+    - early_stopping_patience
+    - batch_size
+    - epoch
+    - learning_rate
+    - momentum
+    - random_seed # -----------key columns-------------
+    - epoch_index 
+    - train_loss
+    - validation_loss
+    - train_score
+    - validation_score
+    - elapsed_time
