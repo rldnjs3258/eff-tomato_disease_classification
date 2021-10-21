@@ -31,16 +31,16 @@ class CustomDataset(Dataset):
         self.db = self.data_loader()
         # Image Augmentation (Efficientnet은 모델 버전에 따라 Normalize를 주의 해서 해야 함)
         # reference : https://colab.research.google.com/github/sanchit2843/MLBasics/blob/master/IntelClassificationKaggle/Pytorch%20transfer%20learning%20tutorial%20%5B93%25acc%5D.ipynb
-        self.transform = transforms.Compose([
-            transforms.Resize(self.input_shape), # default
-            transforms.RandomRotation(90), # 이미지 랜덤 회전
-            transforms.RandomHorizontalFlip(p=0.5), # 이미지 랜덤 수평 뒤집기
-            transforms.RandomVerticalFlip(p=0.5), # 이미지 랜덤 수직 뒤집기
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
-            transforms.ToTensor(), # default
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]), # default
-        ])
-#         self.transform = transforms.Compose([transforms.Resize(self.input_shape), transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+#         self.transform = transforms.Compose([
+#             transforms.Resize(self.input_shape), # default
+#             transforms.RandomRotation(90), # 이미지 랜덤 회전
+#             transforms.RandomHorizontalFlip(p=0.5), # 이미지 랜덤 수평 뒤집기
+#             transforms.RandomVerticalFlip(p=0.5), # 이미지 랜덤 수직 뒤집기
+#             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
+#             transforms.ToTensor(), # default
+#             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]), # default
+#         ])
+        self.transform = transforms.Compose([transforms.Resize(self.input_shape), transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
         self.class_num = len(self.db['label'].unique())
         
     def data_loader(self):

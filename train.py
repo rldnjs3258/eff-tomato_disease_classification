@@ -88,7 +88,7 @@ if __name__ == '__main__':
         
         # WandB : wandb 세팅
         wandb.init(project='eff-tomato_disease_classification', entity='benseo', config={"num_epochs": config['TRAIN']['num_epochs'], "batch_size": config['TRAIN']['batch_size'], "learning_rate": config['TRAIN']['learning_rate'], "early_stopping_patience": config['TRAIN']['early_stopping_patience'], "model": config['TRAIN']['model'], "input_shape": config['TRAIN']['input_shape'], "layer": config['TRAIN']['layer'], "img_aug": config['TRAIN']['img_aug'], "softmax": config['TRAIN']['softmax'], "initialization": config['TRAIN']['initialization']}) # 실험 init 설정
-        wandb.run.name = config['TRAIN']['model'] + '-layer(' + config['TRAIN']['layer'] + ')-img_aug(' + config['TRAIN']['img_aug'] + ')-softmax(' + config['TRAIN']['softmax'] + ')-' + config['TRAIN']['initialization'] # 실험 이름 설정
+        wandb.run.name = config['TRAIN']['model'] + '-layer(' + config['TRAIN']['layer'] + ')-early_stopping(' + str(config['TRAIN']['early_stopping_patience']) + ')-img_aug(' + config['TRAIN']['img_aug'] + ')-softmax(' + config['TRAIN']['softmax'] + ')-' + config['TRAIN']['initialization'] # 실험 이름 설정
         wandb.run.save()
     
         # Set random seed
