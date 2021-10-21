@@ -68,7 +68,7 @@ class Trainer():
         print(msg)
         
         # WandB : train loss, train score 추적
-        wandb.log({"train_loss": trainer.train_mean_loss, "train_score": trainer.train_score})
+        wandb.log({"train_loss": self.train_mean_loss, "train_score": self.train_score})
 
         #self.logger.info(msg) if self.logger else print(msg)
 
@@ -105,7 +105,7 @@ class Trainer():
             print(msg)
             
             # WandB : validation loss, validation score 추적
-            wandb.log({"validation_loss": trainer.val_mean_loss, "validation_score": trainer.validation_score})
+            wandb.log({"validation_loss": self.val_mean_loss, "validation_score": self.validation_score})
             
             # WandB : 이미지 출력
             wandb.log({"val images": val_images_lst})
