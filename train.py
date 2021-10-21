@@ -177,8 +177,8 @@ if __name__ == '__main__':
                                          train_score=trainer.train_score,
                                          validation_score=trainer.validation_score)
             
-            # WandB : validation loss, validation score 추적
-            wandb.log({"validation_loss": trainer.val_mean_loss, "validation_score": trainer.validation_score})
+            # WandB : train loss, train score, validation loss, validation score 추적
+            wandb.log({"train_loss":trainer.train_mean_loss, "validation_loss": trainer.val_mean_loss, "train_score":trainer.train_score, "validation_score": trainer.validation_score})
             
             # Performance record - plot
             performance_recorder.save_performance_plot(final_epoch=epoch_index)
