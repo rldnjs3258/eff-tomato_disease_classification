@@ -13,9 +13,9 @@ DATALOADER:
 
 TRAIN:
   num_epochs: 50
-  batch_size: 128 # 128 -> 256
+  batch_size: 8 # 128 -> 64
   learning_rate: 0.0005
-  early_stopping_patience: 20 # early stop 쓸지 고려 (진동 https://medium.com/@codecompose/resnet-e3097d2cfe42)
+  early_stopping_patience: 50 # early stop 쓸지 고려 (진동 https://medium.com/@codecompose/resnet-e3097d2cfe42)
   model: Efficientb6
   optimizer:
   scheduler:
@@ -23,8 +23,8 @@ TRAIN:
   weight_decay: 0.00001
   loss_function:
   metric_function:
-  input_shape: 128 # Efficientnet의 중요 파라미터
-  layer: '1000-512-256-10'
+  input_shape: 528 # Efficientnet의 중요 파라미터
+  layer: '1280-500-250-10'
   img_aug: 'Y'
   softmax: 'N'
   initialization : 'Xavier'
