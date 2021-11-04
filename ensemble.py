@@ -34,7 +34,8 @@ class WeightedVotingEnsemble():
     def __submission__(self, ensemble_result):
         submission = pd.DataFrame({'file_name': self.df[self.key],
                                   'answer': ensemble_result.flatten()})
-        answer = submission['answer'].apply(np.int64)
+        answer = submission['answer']
+        #answer = submission['answer'].apply(np.int64)
         submission = pd.DataFrame({'file_name': self.df[self.key],
                                   'answer': answer})
         print('Weighted voting ensemble done!')
@@ -46,13 +47,13 @@ class WeightedVotingEnsemble():
 
 
 if __name__ == '__main__':
-    df = pd.read_csv('results/csv/pred1.csv')
-    pred1 = pd.read_csv('results/csv/pred2.csv')
-    pred2 = pd.read_csv('results/csv/pred3.csv')
+    df = pd.read_csv('results/csv/[0.9953]Efficientnetb6-layer(1280-500-250-10)-ES(50)-IS(528)_Aug(NoColor).csv')
+    pred1 = pd.read_csv('results/csv/[0.9809]Efficientb0-layer(1280-500-250-10)-ES(20)-IS(224)_Aug(NoColor).csv')
+    pred2 = pd.read_csv('results/csv/[0.9892]Efficientb0-layer(1280-500-250-10)-ES(50)-IS(224)_Aug(NoColor).csv')
     path = 'results/csv/ensemble_result.csv' # 최종 ensemble 결과 저장 위치
     
     # set parmas
-    weight = {'pred1' : 2,
+    weight = {'pred1' : 1,
               'pred2' : 1} # weight
     key = 'file_name'
     label = 'answer'
@@ -60,7 +61,7 @@ if __name__ == '__main__':
     # class : WeightVotingEnsemble
     weighted_voting_ensemble = WeightedVotingEnsemble(df, key, label)
     weighted_voting_ensemble.__set_weight__(pred1, weight['pred1'])
-    weighted_voting_ensemble.__set_weight__(pred2, weight['pred1'])
+    weighted_voting_ensemble.__set_weight__(pred2, weight['pred2'])
     ensemble_result = weighted_voting_ensemble.__ensemble__()
     submission = weighted_voting_ensemble.__submission__(ensemble_result)
     weighted_voting_ensemble.__to_csv__(path, submission)

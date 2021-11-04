@@ -37,7 +37,7 @@ DEBUG = False
 # CONFIG
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_PROJECT_DIR = os.path.dirname(PROJECT_DIR)
-DATA_DIR = '../shared/hackathon/Split/'
+DATA_DIR = '../shared/Split/'
 TRAIN_CONFIG_PATH = os.path.join(PROJECT_DIR, 'config/train_config.yml')
 config = load_yaml(TRAIN_CONFIG_PATH)
 

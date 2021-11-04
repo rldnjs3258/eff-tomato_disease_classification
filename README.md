@@ -1,5 +1,4 @@
 # eff-tomato_disease_classification
- - baseline code spupported by MNC
  - writer : Kiwon Seo
 
 <br>
@@ -152,24 +151,26 @@ with torch.no_grad():
 ### (2) 성능 개선
 #### 1) EfficientNetb6 적용 및 레이어 쌓기
  - Pretrained Model : EfficientNetb6
- - 레이어 : 1000 -> 512 -> 256 -> 10
+ - 레이어 : 1280 -> 500 -> 250 -> 10
 ```python
 class PestClassifier(nn.Module):
     def __init__(self, num_class):
         super(PestClassifier, self).__init__()
-        # Pretrained Model : efficientnet-b6
-        self.model = EfficientNet.from_pretrained('efficientnet-b6', num_classes=1000)
+        # Pretrained Model : efficientnet-b3
+        self.model = EfficientNet.from_pretrained('efficientnet-b6', num_classes=1280)
 
         # Top Layer : effificientnet-b3에 fully-connected 레이어를 쌓아서 최종 레이어에서는 10개가 output (클래스가 10개임)
         # Pretrained model 이후 쌓는 레이어들로, 실험적 혹은 경험적 결과로 레이어를 쌓으면 됨
         num_features = self.model._fc.in_features
-        self.model._fc = nn.Sequential(nn.Linear(num_features, 512),
+        self.model._fc = nn.Sequential(nn.Linear(num_features, 500),
+                                 nn.BatchNorm1d(500),
                                  nn.ReLU(),
-                                 nn.Dropout(p=0.5),
-                                 nn.Linear(512, 256),
+                                 nn.Dropout(p=0.2),
+                                 nn.Linear(500, 250),
+                                 nn.BatchNorm1d(250),
                                  nn.ReLU(),
-                                 nn.Dropout(p=0.25),
-                                 nn.Linear(256, num_class))
+                                 nn.Dropout(p=0.2),
+                                 nn.Linear(250, num_class))
 
 # pytorch는 loss를 crossentropy로 하면 softmax가 같이 실행 됨
 # https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
@@ -195,7 +196,7 @@ class PestClassifier(nn.Module):
             transforms.RandomRotation(90), # 이미지 랜덤 회전
             transforms.RandomHorizontalFlip(p=0.5), # 이미지 랜덤 수평 뒤집기
             transforms.RandomVerticalFlip(p=0.5), # 이미지 랜덤 수직 뒤집기
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2),
+            #transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2), # color 변환은 성능을 저하 시킬 수도 있음
             transforms.ToTensor(), # default
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]), # default
         ])
@@ -237,23 +238,24 @@ TRAIN:
  - Default Initializer인 xavier에서 케이밍으로 변경 하기
 
 <br>
+
+#### 6) Input Size를 권장 사이즈로 하기
+
+<br>
 <hr>
 <br>
 
 ### (3) 추가 실험
- - 앙상블 실험 (클래스 vote가 아닌 확률 값으로 앙상블)
+ - Majority Voting Ensemble 실험 (추후 클래스 vote가 아닌 확률 값 mean으로 앙상블)
 
 <br>
 <hr>
 <br>
 
 ## 4. 기타
- - 회고 : 회고 개인 별로 notion에 정리 해서 문서화 하기 (좋았던 점, 아쉬웠던 점)
- - 공유 폴더 : 공유 폴더에 추가적으로 더 실험 한 코드 올리기
- - 발표 (10/29) : 대회 개요, 데이터 설명 (Train / Val 셋) Baseline Code, 과정, 결과, 회고 (좋았던 점, 아쉬웠던 점, 느꼈던 점), 추가 개선
  - 블로그 : 추후 블로그 화 하기
  - Colab GPU or TPU로 학습 하기 (TPU로 이용 할 경우 데이터셋 변환이 필요 하나 속도 뿐 아니라 계산 성능도 좋아짐. float32 -> float64를 계산 할 경우 소숫점 밑 64자리를 더 정확히 계산하게 됨)
  - Test set에도 Image Augmentation 적용 하는 TTD 실험 하기
  - Pytorch Lightening 적용 하기 (https://www.pytorchlightning.ai/tutorials) 
- - 타 식물 데이터로의 확장, streamlit
+ - streamlit
  - 주석 달기
