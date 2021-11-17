@@ -144,6 +144,7 @@ with torch.no_grad():
 ## 4. 성능 개선 및 실험
 ### (1) 모델 버전 실험
  - Pretrained Model : EfficientNet b0, b3, b6
+ - 모델 별로 구조, 채널, 깊이 넓이가 다르기 때문에 모델 버전을 바꿔 가며 가벼운 모델 부터 무거운 모델 까지 실
  - 레이어 : 1280 -> 500 -> 250 -> 10
  - 결과 : 성능 향상
 ```python
@@ -176,6 +177,7 @@ class PestClassifier(nn.Module):
 <br>
 
 ### (2) Image Augmentation 실험
+ - Image Augmentation은 원본 이미지를 조작 하여 원본에 크고 작은 변화들을 주어 대상 고유의 특징을 조금 더 넓게 가지게 할 수 있는 기법으로 Image 문제에서 Overfitting을 방지 하고 성능을 향상 할 수 있는 기법
  - 실험 : 이미지 랜덤 회전, 랜덤 수평 뒤집기, 랜덤 수직 뒤집기 등
  - 결과 : 성능 향상
 ```python
@@ -193,7 +195,7 @@ class PestClassifier(nn.Module):
 <br>
 
 ### (3) Early Stopping 실험
- - Early Stopping : 과적합을 회피 하도록 만든 기법
+ - Early Stopping : 과적합을 회피 하도록 만든 기법으로, Epoch마다 Validation Loss를 체크 해서 로스가 떨어지지 않는 구간을 count 하여 일정 patience에 다다르면 훈련을 조기에 멈추는 방식을 이용 (과적합이 발생 하기 전 까지는 training loss와 validation loss가 둘 다 감소 하지만, 과적합이 일어나면 training loss는 감소하는 반면에 validation loss는 증가)
  - 실험 목적 : 진동이 많을 경우 성급한 조기 종료가 일어 날 수 있으므로 Patience를 조절 하며 실험 진행
  - 결과 : 성능 향상
 ```bash
@@ -219,6 +221,7 @@ TRAIN:
 <br>
 
 ### (4) Softmax
+ - 클래스 분류 문제에서 마지막 단계에 출력 값을 정규화 해 주는 함수로, 마지막 단에서 출력을 0~1 사이 값으로 정규화 하여 총 합을 1이 되게 해 주는 함수
  - PyTorch의 CrossEntropy Loss는 softmax와 CrossEntropy Loss를 합친 것을 제공 하므로 Softmax를 떼고 실험
  - 결과 : 성능 향상
 
