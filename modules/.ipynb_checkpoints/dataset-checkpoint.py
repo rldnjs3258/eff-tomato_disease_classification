@@ -36,7 +36,7 @@ class CustomDataset(Dataset):
             transforms.RandomRotation(90), # 이미지 랜덤 회전
             transforms.RandomHorizontalFlip(p=0.5), # 이미지 랜덤 수평 뒤집기
             transforms.RandomVerticalFlip(p=0.5), # 이미지 랜덤 수직 뒤집기
-            # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2), # color 변환 떼기
+            # transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.2), # color 변환 -> 오히려 성능 저하가 올 수 있음
             transforms.ToTensor(), # default
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]), # default
         ])
@@ -87,7 +87,7 @@ class TestDataset(Dataset):
         self.data_dir = data_dir
         self.input_shape = input_shape
         self.db = self.data_loader()
-        # Image Augmentation은 Train Dataset에만 적용
+        # Image Augmentation은 일반적으로 Train Dataset에만 적용하지만 TTA 등의 방법론도 적용 가능
         self.transform = transforms.Compose([transforms.Resize(self.input_shape), transforms.ToTensor(), transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
 
     def data_loader(self):

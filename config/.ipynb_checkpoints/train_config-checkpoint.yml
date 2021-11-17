@@ -1,5 +1,5 @@
 # 내용: Train시 config 파일
-# UPDATED: num_epochs, batch_size(cuda out of memory시 줄이기), early_stopping_patience, model, input_shape, layer, img_aug, softmax, initialization
+# UPDATED:
 # TODO: 하이퍼 파라미터 튜닝 및 실험 진행 (early_stopping_patience, model, input_shape, layer, img_aug, softmax, initialization)
 
 SEED:
@@ -13,7 +13,7 @@ DATALOADER:
 
 TRAIN:
   num_epochs: 50
-  batch_size: 8 # 128 -> 64
+  batch_size: 8
   learning_rate: 0.0005
   early_stopping_patience: 50 # early stop 쓸지 고려 (진동 https://medium.com/@codecompose/resnet-e3097d2cfe42)
   model: Efficientb6

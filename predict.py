@@ -26,7 +26,7 @@ from modules.metrics import get_metric_fn
 import torch.nn as nn
 os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
-# # CONFIG
+# CONFIG
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_PROJECT_DIR = os.path.dirname(PROJECT_DIR)
 DATA_DIR = '../shared/test'
@@ -39,7 +39,8 @@ RANDOM_SEED = config['SEED']['random_seed']
 
 # PREDICT
 BATCH_SIZE = config['PREDICT']['batch_size']
-### Input Shape 설정 필요 ###
+
+########################################### Input Shape 설정 필요! ###########################################
 INPUT_SHAPE = (528, 528)
 
 
@@ -51,10 +52,9 @@ if __name__ == '__main__':
     np.random.seed(RANDOM_SEED)
     random.seed(RANDOM_SEED)
 
-    ### Best Model, pred 저장 위치 설정 필요 ###    
+    ########################################### Best Model, predict 결과 저장 할 위치 설정 필요! ###########################################
     TRAINED_MODEL_PATH = 'results/train/Efficientb6_20211102180641/best.pt'
     SAVE_PATH = 'results/csv/[0.9953]Efficientnetb6-layer(1280-500-250-10)-ES(50)-IS(528)_Aug(NoColor).csv'
-    ######
 
     # Set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

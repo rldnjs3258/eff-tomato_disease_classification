@@ -1,20 +1,31 @@
 # eff-tomato_disease_classification
- - writer : Kiwon Seo
+ - Writer : Kiwon Seo
 
 <br>
 <hr>
 <br>
 
-## 1. How to use
- - run : python train.py
- - predict : python predict.py
- - ensemble : python ensemble.py
+## 1. 개요
+ - 데이터 : 토마토 잎사귀 데이터
+ - 과제 : 토마토 병충해 종류 분류 (10종류)
+ - train/images : 13,861장 이미지
+ - test/images : 3463장 이미지
+ - Efficientnet : 모델의 정확도와 밀접한 관계의 깊이, 너비, 입력 이미지 크기 간의 최적의 관계를 정의한 모델
+
+<br>
+<hr>
+<br>
+
+## 2. How to use
+ - Run : python train.py
+ - Predict : python predict.py
+ - Ensemble : python ensemble.py
  
 <br>
 <hr>
 <br>
 
-## 2. 확장 - 플랫폼
+## 3. 확장 - WanDB
 ### (1) WanDB란?
  - WanDB는 **Weight & Biases**의 약자로, 모델 개발을 위한 툴이다.
  - WanDB는 Tensorflow, Pytorch 등 **여러 프레임워크**에서 사용 가능 하다.
@@ -32,7 +43,6 @@
 <br>
 
 ### (2) WanDB 적용 내용
- - Refference : https://greeksharifa.github.io/references/2020/06/10/wandb-usage/
  - ID : 깃헙 계정
  - Full name : Ben Seo   
  
@@ -48,7 +58,7 @@
 
 <br>
 
-### (3) WanDB 코드 스니펫 (튜토리얼)
+### (3) WanDB 코드 튜토리얼
  - Train 파일에 아래의 코드를 적용 해서 모델을 추적 하면 됨!
 ```python
 import wandb
@@ -131,36 +141,20 @@ with torch.no_grad():
 <hr>
 <br>
 
-## 3. 성능 개선 및 실험
-### (1) Baseline
- - Pretrained Model : EfficientNet-b2
- - Layer : None
- - Image Augmentation : None
- - Early Stopping Patience : 20
- - Softmax : True
- - Initialization : Xavier
- - Batch Size : 128
- - Input Shape : (128, 128)
- - Val Loss : 
- - Val Accuracy : 
- 
-<br>
-<hr>
-<br>
-
-### (2) 성능 개선
-#### 1) EfficientNetb6 적용 및 레이어 쌓기
- - Pretrained Model : EfficientNetb6
+## 4. 성능 개선 및 실험
+### (1) 모델 버전 실험
+ - Pretrained Model : EfficientNet b0, b3, b6
  - 레이어 : 1280 -> 500 -> 250 -> 10
+ - 결과 : 성능 향상
 ```python
+# - EfficientNet은 논문에서 모델 버전 별로 최적의 Input Shape을 제시 함 (버전 별로 Input Shape 지정 필요)
+# - 모델을 freeze 시켜서 탑 레이어를 쌓아 실험 이후 unfreeze 하여 학습 하는 방법 시도
+# - 레이어 실험 : 1280 - 500 - 250 - 10
 class PestClassifier(nn.Module):
     def __init__(self, num_class):
         super(PestClassifier, self).__init__()
-        # Pretrained Model : efficientnet-b3
         self.model = EfficientNet.from_pretrained('efficientnet-b6', num_classes=1280)
 
-        # Top Layer : effificientnet-b3에 fully-connected 레이어를 쌓아서 최종 레이어에서는 10개가 output (클래스가 10개임)
-        # Pretrained model 이후 쌓는 레이어들로, 실험적 혹은 경험적 결과로 레이어를 쌓으면 됨
         num_features = self.model._fc.in_features
         self.model._fc = nn.Sequential(nn.Linear(num_features, 500),
                                  nn.BatchNorm1d(500),
@@ -171,25 +165,19 @@ class PestClassifier(nn.Module):
                                  nn.ReLU(),
                                  nn.Dropout(p=0.2),
                                  nn.Linear(250, num_class))
-
-# pytorch는 loss를 crossentropy로 하면 softmax가 같이 실행 됨
-# https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
-#         # Softmax -> logsoftmax로 바꾸기
-#         self.softmax = nn.Softmax(dim=1)
         
     def forward(self, input_img):
         # Model
         x = self.model(input_img)
-        
-#         # Softmax -> logsoftmax로 바꾸기
-#         x = self.softmax(x)
         
         return x
 ```
 
 <br>
 
-#### 2) Image Augmentation 적용
+### (2) Image Augmentation 실험
+ - 실험 : 이미지 랜덤 회전, 랜덤 수평 뒤집기, 랜덤 수직 뒤집기 등
+ - 결과 : 성능 향상
 ```python
         self.transform = transforms.Compose([
             transforms.Resize(self.input_shape), # default
@@ -204,15 +192,16 @@ class PestClassifier(nn.Module):
 
 <br>
 
-#### 3) Early Stopping 없애는 것 고려 하기
- - 이유 : 진동이 많을 경우 local minimum에 수렴 할 수 있음 (https://medium.com/@codecompose/resnet-e3097d2cfe42)
- - Epochs을 50으로 두고 early_stopping_patience를 50으로 둬서 없는 것과 같이 이용
-```
+### (3) Early Stopping 실험
+ - Early Stopping : 과적합을 회피 하도록 만든 기법
+ - 실험 목적 : 진동이 많을 경우 성급한 조기 종료가 일어 날 수 있으므로 Patience를 조절 하며 실험 진행
+ - 결과 : 성능 향상
+```bash
 TRAIN:
   num_epochs: 50
-  batch_size: 128 # 128 -> 256
+  batch_size: 128
   learning_rate: 0.0005
-  early_stopping_patience: 50 # early stop 쓸지 고려 (진동 https://medium.com/@codecompose/resnet-e3097d2cfe42)
+  early_stopping_patience: 50 # early stopping patience
   model: Efficientb6
   optimizer:
   scheduler:
@@ -229,33 +218,32 @@ TRAIN:
 
 <br>
 
-#### 4) Softmax 떼기
- - 이유 : Pytorch의 Crossentropy loss에는 softmax가 이미 붙어 있음. 모델에 softmax를 붙이면 softmax를 두 번 이용 하는 셈임
+### (4) Softmax
+ - PyTorch의 CrossEntropy Loss는 softmax와 CrossEntropy Loss를 합친 것을 제공 하므로 Softmax를 떼고 실험
+ - 결과 : 성능 향상
 
 <br>
 
-#### 5) Initializer 설정
- - Default Initializer인 xavier에서 케이밍으로 변경 하기
+### (5) Initialization
+ - Initialization : 초기 값을 어떻게 선택 하느냐에 따라 학습에서 다른 성능을 보임
+ - 실험 : Xavier, Kaiming 등 실험
+ - 결과 : 성능 향상 X
 
 <br>
 
-#### 6) Input Size를 권장 사이즈로 하기
+### (6) Input Size를 모델 버전 별 권장 사이즈로 적용 하기
+ - 결과 : 성능 향상
+
+<br>
+
+### (7) Ensemble
+ - Weighted Voting Ensemble 진행 (모델 버전 별, 성능 높은 모델 별)
+ - 추후 아웃풋 기반의 앙상블이 아닌, 모델 별 output을 확률 값으로 출력 해서 mean으로 Majority Voting Ensemble 적용 하기.
 
 <br>
 <hr>
 <br>
 
-### (3) 추가 실험
- - Majority Voting Ensemble 실험 (추후 클래스 vote가 아닌 확률 값 mean으로 앙상블)
-
-<br>
-<hr>
-<br>
-
-## 4. 기타
- - 블로그 : 추후 블로그 화 하기
- - Colab GPU or TPU로 학습 하기 (TPU로 이용 할 경우 데이터셋 변환이 필요 하나 속도 뿐 아니라 계산 성능도 좋아짐. float32 -> float64를 계산 할 경우 소숫점 밑 64자리를 더 정확히 계산하게 됨)
- - Test set에도 Image Augmentation 적용 하는 TTD 실험 하기
- - Pytorch Lightening 적용 하기 (https://www.pytorchlightning.ai/tutorials) 
- - streamlit
- - 주석 달기
+## 5. 기타
+ - Colab GPU or TPU로 학습 하기 (TPU로 이용 할 경우 데이터셋 변환이 필요 하나 속도 뿐 아니라 계산 성능도 좋아짐. float32 -> float64를 계산 할 경우 소숫점 밑 64자리를 더 정확히 계산하게 되기 때문)
+ - Test set에도 Image Augmentation 적용 하는 TTA 실험 하기

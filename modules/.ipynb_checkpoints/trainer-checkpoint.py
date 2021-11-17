@@ -81,7 +81,7 @@ class Trainer():
         target_lst = []
         pred_lst = []
         prob_lst = []
-        # WandB : Validation Image 리스트
+        # WandB : Validation Image 담을 리스트 선언
         val_images_lst = []
         with torch.no_grad():
             for batch_index, (img, label) in enumerate(tqdm(dataloader)):
@@ -101,7 +101,7 @@ class Trainer():
             msg = f'Epoch {epoch_index}, {mode} loss: {self.val_mean_loss}, Acc: {self.validation_score}'
             print(msg)
             
-            # WandB : 이미지 출력
+            # WandB : 이미지 로그 출력
             wandb.log({"val images": val_images_lst})
 
         #self.logger.info(msg) if self.logger else print(msg)

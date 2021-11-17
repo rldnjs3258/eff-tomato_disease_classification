@@ -56,7 +56,6 @@ MOMENTUM = config['TRAIN']['momentum']
 WEIGHT_DECAY = config['TRAIN']['weight_decay']
 LOSS_FN = config['TRAIN']['loss_function']
 METRIC_FN = config['TRAIN']['metric_function']
-# efficientnet 모델 버전에 따라 INPUT SHAPE 아주 중요함!
 INPUT_SHAPE = config['TRAIN']['input_shape']
 INPUT_SHAPE = (INPUT_SHAPE, INPUT_SHAPE)
 
@@ -80,7 +79,7 @@ def train_config(train_config_list):
     return INPUT_SHAPE
 
 if __name__ == '__main__':    
-    # config 설정에 따라 3개의 config 하이퍼 파라미터 실험 (input_shape만 바꿈)
+    # train_config_list에 실험 할 config들을 넣어 두고 실험 진행 하기
     train_config_list = ['config/train_config.yml']
     
     for i in train_config_list:
@@ -129,9 +128,8 @@ if __name__ == '__main__':
 
         # Set optimizer, scheduler, loss function, metric function
         optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
-        # 원 사이클 돌려서 lr을 찾음
-        scheduler =  optim.lr_scheduler.OneCycleLR(optimizer=optimizer, pct_start=0.1, div_factor=1e5, max_lr=0.0001, epochs=EPOCHS, steps_per_epoch=len(train_dataloader))
-        criterion = nn.CrossEntropyLoss() # pytorch의 crossentropyloss를 쓰면 softmax를 안 써도 됨
+        scheduler =  optim.lr_scheduler.OneCycleLR(optimizer=optimizer, pct_start=0.1, div_factor=1e5, max_lr=0.0001, epochs=EPOCHS, steps_per_epoch=len(train_dataloader)) # 원 사이클을 돌며 lr을 찾아 감
+        criterion = nn.CrossEntropyLoss() # pytorch의 crossentropyloss를 쓰면 softmax를 안 써도 됨 (기본 장착 되어 있음)
         metric_fn = get_metric_fn
 
         # Set trainer
@@ -194,7 +192,7 @@ if __name__ == '__main__':
             # import pdb;pdb.set_trace()
             # if trainer.val_mean_loss < criterion:
             
-            # train loss -> val loss로 해야 early stop이 걸림
+            # val_mean_loss를 기준 점으로 early stop을 걸게 함
             if trainer.val_mean_loss < criterion:
                 criterion = trainer.val_mean_loss
                 performance_recorder.weight_path = os.path.join(PERFORMANCE_RECORD_DIR, 'best.pt')
